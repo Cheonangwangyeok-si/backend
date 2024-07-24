@@ -1,0 +1,9 @@
+spring :
+  application:
+    name: checkmate
+
+  profiles:
+    group:
+      local:
+        - localdb
+    active: local
