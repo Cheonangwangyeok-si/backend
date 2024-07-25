@@ -2,15 +2,8 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate
     open-in-view: false
-    properties:
-      hibernate:
-        format_sql: true
-  jwt:
-    secret: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-
   security:
     oauth2:
       client:
@@ -21,6 +14,7 @@ spring:
             scope:
               - email
               - profile
+
 logging:
   level:
     org.springframework.security: trace
@@ -31,3 +25,6 @@ management:
     web:
       exposure:
         include: "health, info"
+
+jwt:
+  secret: min-diary-secret-key-for-local-please

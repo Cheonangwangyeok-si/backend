@@ -6,4 +6,5 @@ spring :
     group:
       local:
         - localdb
+        - flyway
     active: local
