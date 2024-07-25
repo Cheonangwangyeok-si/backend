@@ -8,7 +8,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  jwt:
+    secret: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 114373234724-7rm0sr3jdjk6tkkcbl4fcg4m8cjgd2k6.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
 logging:
   level:
     org.springframework.security: trace
