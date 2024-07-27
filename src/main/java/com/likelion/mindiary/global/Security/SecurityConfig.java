@@ -1,14 +1,15 @@
-package com.likelion.mindiary.global.config.Security;
+package com.likelion.mindiary.global.Security;
 
 import com.likelion.mindiary.domain.account.repository.AccountRepository;
 import com.likelion.mindiary.domain.account.service.CustomOauth2UserService;
 import com.likelion.mindiary.domain.refreshToken.Repository.RefreshTokenRepository;
-import com.likelion.mindiary.global.config.JWT.JWTFilter;
-import com.likelion.mindiary.global.config.JWT.JWTUtil;
-import com.likelion.mindiary.global.config.JWT.LoginFilter;
+import com.likelion.mindiary.global.Security.JWT.JWTFilter;
+import com.likelion.mindiary.global.Security.JWT.JWTUtil;
+import com.likelion.mindiary.global.Security.JWT.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,7 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -32,6 +35,9 @@ public class SecurityConfig {
     private final RefreshTokenRepository refreshTokenRepository;
     private final AccountRepository memberRepository;
 
+    private final AccessDeniedHandler customAccessDeniedHandler;
+    private final AuthenticationEntryPoint customAuthenticationEntryPoint;
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -42,20 +48,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-
         http
                 .httpBasic(HttpBasicConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable);
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                        .authenticationEntryPoint(customAuthenticationEntryPoint))
+                .cors(AbstractHttpConfigurer::disable)
 
-
-
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/*").permitAll()
-                        .anyRequest().authenticated()
-                );
-
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/error/**", "/actuator/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/api/v1/diary").permitAll()
+                        .anyRequest().authenticated());
 
         // OAuth 2.0 로그인 방식 설정
         http
@@ -81,11 +85,6 @@ public class SecurityConfig {
         // 로그인 필터 이전에 JWTFilter를 넣음
         http
                 .addFilterBefore(new JWTFilter(jwtUtil, refreshTokenRepository, memberRepository), LoginFilter.class);
-
-
-
-
-
 
         return http.build();
     }
