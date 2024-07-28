@@ -3,8 +3,8 @@ package com.likelion.mindiary.domain.account.service;
 import com.likelion.mindiary.domain.account.model.Account;
 import com.likelion.mindiary.domain.account.model.AccountRole;
 import com.likelion.mindiary.domain.account.repository.AccountRepository;
-import com.likelion.mindiary.global.config.Security.CustomOauth2UserDetails;
-import com.likelion.mindiary.global.config.Security.GoogleUserDetails;
+import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
+import com.likelion.mindiary.global.Security.GoogleUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -25,7 +25,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        log.info("getAttributes : {}",oAuth2User.getAttributes());
+        log.info("getAttributes : {}", oAuth2User.getAttributes());
 
         String provider = userRequest.getClientRegistration().getRegistrationId();
 
@@ -38,7 +38,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
         Account member;
 
-        if(findMember == null){
+        if (findMember == null) {
             member = Account.builder()
                     .loginId(loginId)
                     .name(name)
@@ -51,9 +51,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             member = findMember;
         }
 
-
-
-        return new CustomOauth2UserDetails(member,oAuth2User.getAttributes());
+        return new CustomOauth2UserDetails(member, oAuth2User.getAttributes());
     }
 
 }

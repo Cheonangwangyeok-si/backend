@@ -1,17 +1,18 @@
-package com.likelion.mindiary.global.config.JWT;
+package com.likelion.mindiary.global.Security.JWT;
 
 import com.likelion.mindiary.domain.account.model.Account;
 import com.likelion.mindiary.domain.account.model.AccountRole;
 import com.likelion.mindiary.domain.account.repository.AccountRepository;
 import com.likelion.mindiary.domain.refreshToken.Repository.RefreshTokenRepository;
 import com.likelion.mindiary.domain.refreshToken.model.RefreshToken;
-import com.likelion.mindiary.global.config.Security.CustomOauth2UserDetails;
+import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.Null;
+import java.io.IOException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -19,9 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -43,9 +41,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // Authorization 헤더 검증
         // Authorization 헤더가 비어있거나 "Bearer " 로 시작하지 않은 경우
-        if(authorization == null || !authorization.startsWith("Bearer ")){
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
 
-            System.out.println("token null");
+            System.out.println("\n\n\ntoken null");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("text/plain; charset=UTF-8");  // Ensure the correct content type and character encoding
             response.getWriter().write("token null");
@@ -59,15 +57,15 @@ public class JWTFilter extends OncePerRequestFilter {
         // Authorization에서 Bearer 접두사 제거
         String token = authorization.split(" ")[1];
 
-        if( checkRefreshToken(request) == true){
+        if (checkRefreshToken(request) == true) {
             String refreshToken = request.getHeader("Refreshtoken").split(" ")[1];
-            if(refreshToken != null){
+            if (refreshToken != null) {
                 log.info("refreshToken 검증 시작");
                 System.out.println("refreshToken = " + refreshToken);
 
                 Optional<RefreshToken> storedRefreshToken = refreshTokenRepository.findByToken(refreshToken);
 
-                if(!validRefreshToken(storedRefreshToken.get())){ //refreshToken도 만료
+                if (!validRefreshToken(storedRefreshToken.get())) { //refreshToken도 만료
 
 
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -83,9 +81,9 @@ public class JWTFilter extends OncePerRequestFilter {
                 String role = "USER";
                 if (member.getRole() == AccountRole.ADMIN)  role = "ADMIN";
 
-                String newToken = jwtUtil.createAccessToken(member.getLoginId(),role,1000*100L);
+                String newToken = jwtUtil.createAccessToken(member.getLoginId(), role, 1000 * 100L);
                 System.out.println("newToken = " + newToken);
-                response.setHeader(HttpHeaders.AUTHORIZATION,"Bearer " + newToken);
+                response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newToken);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("text/plain; charset=UTF-8");  // Ensure the correct content type and character encoding
                 response.getWriter().write("Access 토큰 발급");
@@ -93,7 +91,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             }
         }
-
 
         // token 소멸 시간 검증
         // 유효기간이 만료한 경우
@@ -109,8 +106,6 @@ public class JWTFilter extends OncePerRequestFilter {
             response.getWriter().flush();
             return;
         }
-
-
 
         // 최종적으로 token 검증 완료 => 일시적인 session 생성
         // session에 user 정보 설정
@@ -137,10 +132,10 @@ public class JWTFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    public boolean validRefreshToken(RefreshToken storedRefreshToken){
-        try{
+    public boolean validRefreshToken(RefreshToken storedRefreshToken) {
+        try {
             jwtUtil.isExpired(storedRefreshToken.getToken());
-        } catch (ExpiredJwtException e){
+        } catch (ExpiredJwtException e) {
             log.info("refreshToken 만료");
             return false;
         }
@@ -148,7 +143,7 @@ public class JWTFilter extends OncePerRequestFilter {
         return true;
     }
 
-    public boolean checkRefreshToken(HttpServletRequest request){
+    public boolean checkRefreshToken(HttpServletRequest request) {
         String refreshToken = request.getHeader("Refreshtoken");
         if(refreshToken == null) return false;
         return true;

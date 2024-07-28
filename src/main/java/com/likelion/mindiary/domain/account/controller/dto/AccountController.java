@@ -1,7 +1,7 @@
 package com.likelion.mindiary.domain.account.controller.dto;
 
 import com.likelion.mindiary.domain.account.service.AccountService;
-import com.likelion.mindiary.global.config.Security.CustomOauth2UserDetails;
+import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
