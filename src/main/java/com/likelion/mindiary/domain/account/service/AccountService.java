@@ -4,16 +4,15 @@ import com.likelion.mindiary.domain.account.model.Account;
 import com.likelion.mindiary.domain.account.repository.AccountRepository;
 import com.likelion.mindiary.domain.refreshToken.Repository.RefreshTokenRepository;
 import com.likelion.mindiary.domain.refreshToken.model.RefreshToken;
-import com.likelion.mindiary.global.config.JWT.JWTUtil;
-import com.likelion.mindiary.global.config.Security.CustomOauth2UserDetails;
+import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
+import com.likelion.mindiary.global.Security.JWT.JWTUtil;
+import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -23,19 +22,18 @@ public class AccountService {
 
     private final JWTUtil jwtUtil;
     private final AccountRepository accountRepository;
-
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public ResponseEntity<String> login(CustomOauth2UserDetails userDetails){
-
+    public ResponseEntity<String> login(CustomOauth2UserDetails userDetails) {
         Account member = accountRepository.findByLoginId(userDetails.getProvidedId());
 
-        String accessToken = jwtUtil.createAccessToken(member.getLoginId(), userDetails.getRole(), 1000*100L); //10초
-        String refreshToken = jwtUtil.createRefreshToken(1000*60*60*24*7L ); // 1달
+        String accessToken = jwtUtil.createAccessToken(member.getLoginId(), userDetails.getRole(),1000 * 100L); // 10초
+        String refreshToken = jwtUtil.createRefreshToken(1000 * 60 * 60 * 24 * 7L); // 1주일
 
-        RefreshToken refreshToken1 = new RefreshToken();
-        refreshToken1.setAccount(member);
-        refreshToken1.setToken(refreshToken);
+        RefreshToken refreshToken1 = RefreshToken.builder()
+                .account(member)
+                .token(refreshToken)
+                .build();
 
         refreshTokenRepository.save(refreshToken1);
 
@@ -45,7 +43,7 @@ public class AccountService {
                 .build();
     }
 
-    public ResponseEntity<String> logout(String accessToken){
+    public ResponseEntity<String> logout(String accessToken) {
         String loginId = jwtUtil.getLoginId(accessToken);
         Account member = accountRepository.findByLoginId(loginId);
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByAccount(member);
