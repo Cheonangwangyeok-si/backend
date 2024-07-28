@@ -1,10 +1,11 @@
 spring :
   application:
-    name: checkmate
+    name: mindiary
 
   profiles:
     group:
       local:
         - localdb
         - flyway
+        - openai
     active: local
