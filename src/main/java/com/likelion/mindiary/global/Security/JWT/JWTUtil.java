@@ -1,13 +1,12 @@
-package com.likelion.mindiary.global.config.JWT;
+package com.likelion.mindiary.global.Security.JWT;
 
 import io.jsonwebtoken.Jwts;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JWTUtil {
@@ -17,10 +16,11 @@ public class JWTUtil {
     // @Value : application.yml에서의 특정한 변수 데이터를 가져올 수 있음
     // string key는 jwt에서 사용 안하므로 객체 키 생성!
     // "${spring.jwt.secret}" : application.yml에 저장된 spring: jwt: secret 에 저장된 암호화 키 사용
-    public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
+    public JWTUtil(@Value("${jwt.secret}") String secret) {
 
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
+
     // loginId 반환 메서드
     public String getLoginId(String token) {
 

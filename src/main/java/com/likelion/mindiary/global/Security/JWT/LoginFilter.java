@@ -1,9 +1,11 @@
-package com.likelion.mindiary.global.config.JWT;
+package com.likelion.mindiary.global.Security.JWT;
 
-import com.likelion.mindiary.global.config.Security.CustomOauth2UserDetails;
+import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Collection;
+import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,9 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -53,7 +52,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // JWTUtil에 token 생성 요청
         String token = jwtUtil.createAccessToken(username, role, 1000 * 60 * 60 * 24L);
 
-        System.out.println(token);
+        System.out.println("\n\n\ntoken : " + token);
 
         // JWT를 response에 담아서 응답 (header 부분에)
         // key : "Authorization"

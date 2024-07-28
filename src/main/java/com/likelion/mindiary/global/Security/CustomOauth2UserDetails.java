@@ -1,4 +1,4 @@
-package com.likelion.mindiary.global.config.Security;
+package com.likelion.mindiary.global.Security;
 
 
 import com.likelion.mindiary.domain.account.model.Account;
