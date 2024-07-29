@@ -4,10 +4,14 @@ import com.likelion.mindiary.domain.account.model.Account;
 import com.likelion.mindiary.domain.account.repository.AccountRepository;
 import com.likelion.mindiary.domain.diary.controller.dto.request.AddDiaryRequest;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetAllDiaryResponse;
+import com.likelion.mindiary.domain.diary.controller.dto.response.GetMonthDiaryResponse;
 import com.likelion.mindiary.domain.diary.exception.NoDiaryEntriesFoundException;
 import com.likelion.mindiary.domain.diary.model.Diary;
+import com.likelion.mindiary.domain.diary.model.Emotion;
 import com.likelion.mindiary.domain.diary.repository.DiaryRepository;
 import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +47,7 @@ public class DiaryService {
         return savedDiary;
     }
 
-    public List<GetAllDiaryResponse> getDiaryWithFeedback(CustomOauth2UserDetails userDetails) {
+    public List<GetAllDiaryResponse> getAllDiaryWithFeedback(CustomOauth2UserDetails userDetails) {
         Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
         Long accountId = account.getAccountId();
 
@@ -68,5 +72,40 @@ public class DiaryService {
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<GetMonthDiaryResponse> getMonthDiaryWithFeedback(
+            CustomOauth2UserDetails userDetails,
+            int year, int month) {
+        Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
+        Long accountId = account.getAccountId();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month - 1);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        Date startDate = calendar.getTime();
+
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date endDate = calendar.getTime();
+
+        List<Object[]> results = diaryRepository.findMonthDiaryByAccountId(accountId, startDate,
+                endDate);
+
+        return results.stream()
+                .map(result -> {
+                    Date date = (Date) result[0];
+                    String title = (String) result[1];
+                    Emotion emotionType = (Emotion) result[2];
+                    String shortEmotion = (String) result[3];
+                    return new GetMonthDiaryResponse(
+                            date,
+                            title,
+                            emotionType,
+                            shortEmotion
+                    );
+                })
+                .collect(Collectors.toList());
+
     }
 }
