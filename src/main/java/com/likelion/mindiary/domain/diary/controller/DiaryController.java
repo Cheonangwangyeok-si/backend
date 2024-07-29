@@ -2,6 +2,7 @@ package com.likelion.mindiary.domain.diary.controller;
 
 import com.likelion.mindiary.domain.diary.controller.dto.request.AddDiaryRequest;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetAllDiaryResponse;
+import com.likelion.mindiary.domain.diary.controller.dto.response.GetMonthDiaryResponse;
 import com.likelion.mindiary.domain.diary.model.Diary;
 import com.likelion.mindiary.domain.diary.service.DiaryService;
 import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -37,10 +39,20 @@ public class DiaryController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<GetAllDiaryResponse>> getDiaryWithFeedback(
+    public ResponseEntity<List<GetAllDiaryResponse>> getAllDiaryWithFeedback(
             CustomOauth2UserDetails userDetails) {
         List<GetAllDiaryResponse> response =
-                diaryService.getDiaryWithFeedback(userDetails);
+                diaryService.getAllDiaryWithFeedback(userDetails);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/month")
+    public ResponseEntity<List<GetMonthDiaryResponse>> getDiaryWithFeedbackByMonth(
+            CustomOauth2UserDetails userDetails,
+            @RequestParam int year,
+            @RequestParam int month) {
+        List<GetMonthDiaryResponse> response =
+                diaryService.getMonthDiaryWithFeedback(userDetails, year, month);
         return ResponseEntity.ok(response);
     }
 }
