@@ -53,9 +53,9 @@ public class DiaryService {
 
         List<Object[]> results = diaryRepository.findDiaryAndShortFeedbackByAccountId(accountId);
 
-        if (results.isEmpty()) {
-            throw new NoDiaryEntriesFoundException();
-        }
+//        if (results.isEmpty()) {
+//            throw new NoDiaryEntriesFoundException();
+//        }
 
         return results.stream()
                 .map(result -> {
