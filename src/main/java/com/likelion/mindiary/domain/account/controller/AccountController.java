@@ -1,4 +1,4 @@
-package com.likelion.mindiary.domain.account.controller.dto;
+package com.likelion.mindiary.domain.account.controller;
 
 import com.likelion.mindiary.domain.account.service.AccountService;
 import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
