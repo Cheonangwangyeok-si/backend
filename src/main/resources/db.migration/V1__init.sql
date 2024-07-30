@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS weekly_emotion
     avg_sadness              DOUBLE       NOT NULL,
     avg_surprise             DOUBLE       NOT NULL,
     avg_neutral              DOUBLE       NOT NULL,
-    weekly_detailed_feedback VARCHAR(255) NOT NULL,
+    weekly_detailed_feedback TEXT         NOT NULL,
     week_start_date          DATE         NOT NULL,
     week_end_date            DATE         NOT NULL,
     account_id               BIGINT       NOT NULL,
