@@ -9,11 +9,12 @@ import com.likelion.mindiary.domain.diary.exception.NoDiaryEntriesFoundException
 import com.likelion.mindiary.domain.diary.model.Diary;
 import com.likelion.mindiary.domain.diary.model.Emotion;
 import com.likelion.mindiary.domain.diary.repository.DiaryRepository;
-import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.likelion.mindiary.global.Security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +28,8 @@ public class DiaryService {
     private final AccountRepository accountRepository;
     private final OpenAiClient openAiClient;
 
-    public Diary addDiary(CustomOauth2UserDetails userDetails,
-            AddDiaryRequest addDiaryRequest) {
+    public Diary addDiary(CustomUserDetails userDetails,
+                          AddDiaryRequest addDiaryRequest) {
         Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
         Long accountId = account.getAccountId();
 
@@ -47,7 +48,7 @@ public class DiaryService {
         return savedDiary;
     }
 
-    public List<GetAllDiaryResponse> getAllDiaryWithFeedback(CustomOauth2UserDetails userDetails) {
+    public List<GetAllDiaryResponse> getAllDiaryWithFeedback(CustomUserDetails userDetails) {
         Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
         Long accountId = account.getAccountId();
 
@@ -75,7 +76,7 @@ public class DiaryService {
     }
 
     public List<GetMonthDiaryResponse> getMonthDiaryWithFeedback(
-            CustomOauth2UserDetails userDetails,
+            CustomUserDetails userDetails,
             int year, int month) {
         Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
         Long accountId = account.getAccountId();
