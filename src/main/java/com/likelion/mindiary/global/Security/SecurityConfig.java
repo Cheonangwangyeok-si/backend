@@ -1,15 +1,14 @@
 package com.likelion.mindiary.global.Security;
 
 import com.likelion.mindiary.domain.account.repository.AccountRepository;
-import com.likelion.mindiary.domain.account.service.CustomOauth2UserService;
+import com.likelion.mindiary.domain.account.service.CustomUserDetailsService;
 import com.likelion.mindiary.domain.refreshToken.Repository.RefreshTokenRepository;
 import com.likelion.mindiary.global.Security.JWT.JWTFilter;
 import com.likelion.mindiary.global.Security.JWT.JWTUtil;
-import com.likelion.mindiary.global.Security.JWT.LoginFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,9 +28,6 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration configuration;
     private final JWTUtil jwtUtil;
-
-    private final CustomOauth2UserService customOauth2UserService;
-
     private final RefreshTokenRepository refreshTokenRepository;
     private final AccountRepository memberRepository;
 
@@ -61,17 +57,15 @@ public class SecurityConfig {
 //                        .requestMatchers(HttpMethod.POST, "/api/v1/diary").permitAll()
                         .anyRequest().authenticated());
 
-        // OAuth 2.0 로그인 방식 설정
         http
-                .oauth2Login((auth) -> auth.loginPage("/api/v1/account/login")
-                        .defaultSuccessUrl("/api/v1/account/login")
-                        .failureUrl("/api/v1/account/login")
+                .formLogin((auth) -> auth.loginPage("/api/v1/account/login")
+                        .loginProcessingUrl("/test")
                         .permitAll()
-                        .userInfoEndpoint(userInfoEndpoint ->
-                                userInfoEndpoint
-                                        .userService(customOauth2UserService)
-                        )
                 );
+//        http
+//                .logout((auth) -> auth
+//                        .logoutUrl("/api/v1/account/logout")
+//                );
 
 //        // 세션설정
 //        http

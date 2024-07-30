@@ -1,17 +1,20 @@
 package com.likelion.mindiary.domain.account.controller;
 
+import com.likelion.mindiary.domain.account.controller.dto.response.LoginDTO;
 import com.likelion.mindiary.domain.account.service.AccountService;
-import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,20 +25,25 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    @GetMapping("/account/login")
-    public ResponseEntity<String> login(@AuthenticationPrincipal CustomOauth2UserDetails customOauth2UserDetails){
-        log.info("user = {}",customOauth2UserDetails.getAttributes());
-        return accountService.login(customOauth2UserDetails);
+    @PostMapping("/account/login")
+    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO){
+        return accountService.login(loginDTO);
+    }
+
+    @GetMapping("/checkToken")
+    public ResponseEntity<String> checkToken(){
+        return ResponseEntity.ok().body("토큰 검증 완료");
     }
 
     @GetMapping("/test")
-    public String test(){
-        return "테스트";
+    public String test() {
+        return "test";
     }
 
     @GetMapping("/account/logout")
     public ResponseEntity<String> logout(HttpServletRequest request){
         String token = request.getHeader(HttpHeaders.AUTHORIZATION).split(" ")[1];
+        System.out.println("token = " + token);
         return accountService.logout(token);
     }
 }

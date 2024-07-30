@@ -5,37 +5,21 @@ import com.likelion.mindiary.domain.account.model.Account;
 import com.likelion.mindiary.domain.account.model.AccountRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class CustomOauth2UserDetails implements UserDetails, OAuth2User {
+public class CustomUserDetails implements UserDetails {
 
     private final Account member;
-    private Map<String, Object> attributes;
 
-    public CustomOauth2UserDetails(Account member, Map<String, Object> attributes) {
+    public CustomUserDetails(Account member) {
         this.member = member;
-        this.attributes = attributes;
-    }
-    public  CustomOauth2UserDetails(Account member){
-        this.member = member;
-    }
-
-    @Override
-    public String getName() {
-        return member.getName();
     }
 
     public String getProvidedId(){
-        return (String) attributes.get("sub");
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
+        return member.getLoginId();
     }
 
     @Override

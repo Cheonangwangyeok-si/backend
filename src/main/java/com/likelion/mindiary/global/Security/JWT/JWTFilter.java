@@ -5,7 +5,7 @@ import com.likelion.mindiary.domain.account.model.AccountRole;
 import com.likelion.mindiary.domain.account.repository.AccountRepository;
 import com.likelion.mindiary.domain.refreshToken.Repository.RefreshTokenRepository;
 import com.likelion.mindiary.domain.refreshToken.model.RefreshToken;
-import com.likelion.mindiary.global.Security.CustomOauth2UserDetails;
+import com.likelion.mindiary.global.Security.CustomUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -37,13 +37,14 @@ public class JWTFilter extends OncePerRequestFilter {
         // request에서 Authorization 헤더 찾음
         String authorization = request.getHeader("Authorization");
 
-
+        String reponseURL = request.getRequestURI();
+        System.out.println("reponseURL = " + reponseURL);
 
         // Authorization 헤더 검증
         // Authorization 헤더가 비어있거나 "Bearer " 로 시작하지 않은 경우
         if (authorization == null || !authorization.startsWith("Bearer ")) {
 
-            System.out.println("\n\n\ntoken null");
+            System.out.println("token null");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("text/plain; charset=UTF-8");  // Ensure the correct content type and character encoding
             response.getWriter().write("token null");
@@ -57,55 +58,60 @@ public class JWTFilter extends OncePerRequestFilter {
         // Authorization에서 Bearer 접두사 제거
         String token = authorization.split(" ")[1];
 
-        if (checkRefreshToken(request) == true) {
-            String refreshToken = request.getHeader("Refreshtoken").split(" ")[1];
-            if (refreshToken != null) {
-                log.info("refreshToken 검증 시작");
-                System.out.println("refreshToken = " + refreshToken);
+        // 체크 토큰 api 에서만 토큰 만료 검증 및 재발급!!!!!!!!!!!!!!!
+        if(reponseURL.equals("/api/v1/checkToken") ){
+            if (checkRefreshToken(request) == true) {
+                String refreshToken = request.getHeader("Refreshtoken").split(" ")[1];
+                if (refreshToken != null) {
+                    log.info("refreshToken 검증 시작");
+                    System.out.println("refreshToken = " + refreshToken);
 
-                Optional<RefreshToken> storedRefreshToken = refreshTokenRepository.findByToken(refreshToken);
+                    Optional<RefreshToken> storedRefreshToken = refreshTokenRepository.findByToken(refreshToken);
 
-                if (!validRefreshToken(storedRefreshToken.get())) { //refreshToken도 만료
+                    if (!validRefreshToken(storedRefreshToken.get())) { //refreshToken도 만료
 
 
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("text/plain; charset=UTF-8");  // Ensure the correct content type and character encoding
+                        response.getWriter().write("RefreshToken 만료");
+                        filterChain.doFilter(request, response);
+
+                        // 메서드 종료
+                        return;
+                    }
+                    Account member = storedRefreshToken.get().getAccount();
+                    // 검증 성고 시 access 토큰 재발급
+                    String role = "USER";
+                    if (member.getRole() == AccountRole.ADMIN)  role = "ADMIN";
+
+                    String newToken = jwtUtil.createAccessToken(member.getLoginId(), role, 1000 * 100L);
+                    System.out.println("newToken = " + newToken);
+                    response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newToken);
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("text/plain; charset=UTF-8");  // Ensure the correct content type and character encoding
-                    response.getWriter().write("RefreshToken 만료");
-                    filterChain.doFilter(request, response);
-
-                    // 메서드 종료
+                    response.getWriter().write("Access 토큰 발급");
+                    response.getWriter().flush();
                     return;
                 }
-                Account member = storedRefreshToken.get().getAccount();
-                // 검증 성고 시 access 토큰 재발급
-                String role = "USER";
-                if (member.getRole() == AccountRole.ADMIN)  role = "ADMIN";
+            }
+            // token 소멸 시간 검증
+            // 유효기간이 만료한 경우
+            // refresh 토큰 요청 후 db에 저장된 refresh토큰과 비교 -> 일치하면 access토큰 재발급
+            try {
+                jwtUtil.isExpired(token);
 
-                String newToken = jwtUtil.createAccessToken(member.getLoginId(), role, 1000 * 100L);
-                System.out.println("newToken = " + newToken);
-                response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + newToken);
+            } catch (ExpiredJwtException e) {
+                System.out.println("!!!!!token expired!!!!!");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("text/plain; charset=UTF-8");  // Ensure the correct content type and character encoding
-                response.getWriter().write("Access 토큰 발급");
+                response.getWriter().write("만료된 토큰");
                 response.getWriter().flush();
                 return;
             }
+
         }
 
-        // token 소멸 시간 검증
-        // 유효기간이 만료한 경우
-        // refresh 토큰 요청 후 db에 저장된 refresh토큰과 비교 -> 일치하면 access토큰 재발급
-        try {
-            jwtUtil.isExpired(token);
 
-        } catch (ExpiredJwtException e) {
-            System.out.println("!!!!!token expired!!!!!");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("text/plain; charset=UTF-8");  // Ensure the correct content type and character encoding
-            response.getWriter().write("만료된 토큰");
-            response.getWriter().flush();
-            return;
-        }
 
         // 최종적으로 token 검증 완료 => 일시적인 session 생성
         // session에 user 정보 설정
@@ -120,7 +126,7 @@ public class JWTFilter extends OncePerRequestFilter {
         member.setRole(AccountRole.USER);
 
         // UserDetails에 회원 정보 객체 담기
-        CustomOauth2UserDetails customUserDetails = new CustomOauth2UserDetails(member);
+        CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
         // 스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
