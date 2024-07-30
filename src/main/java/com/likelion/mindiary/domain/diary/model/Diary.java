@@ -11,7 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,7 +39,7 @@ public class Diary {
     private String content;
 
     @Column(nullable = false)
-    private Date diaryAt;
+    private LocalDate diaryAt;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)

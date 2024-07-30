@@ -1,7 +1,7 @@
 package com.likelion.mindiary.domain.diary.repository;
 
 import com.likelion.mindiary.domain.diary.model.Diary;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +20,6 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
             "AND d.diaryAt BETWEEN :startDate AND :endDate")
     List<Object[]> findMonthDiaryByAccountId(
             @Param("accountId") Long accountId,
-            @Param("startDate") Date startDate,
-            @Param("endDate") Date endDate);
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 }

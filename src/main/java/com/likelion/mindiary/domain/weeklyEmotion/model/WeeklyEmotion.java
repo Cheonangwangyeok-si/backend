@@ -9,7 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,10 +49,10 @@ public class WeeklyEmotion {
     private String weeklyDetailedFeedback;
 
     @Column(nullable = false)
-    private Date weekStartDate;
+    private LocalDate weekStartDate;
 
     @Column(nullable = false)
-    private Date weekEndDate;
+    private LocalDate weekEndDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
