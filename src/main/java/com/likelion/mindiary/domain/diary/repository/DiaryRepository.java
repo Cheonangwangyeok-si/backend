@@ -1,6 +1,7 @@
 package com.likelion.mindiary.domain.diary.repository;
 
 import com.likelion.mindiary.domain.diary.model.Diary;
+import com.likelion.mindiary.domain.weeklyEmotion.scheduler.dto.EmotionCommand;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,4 +32,18 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
             @Param("accountId") Long accountId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT d " +
+            "FROM Diary d " +
+            "WHERE d.account.accountId = :accountId " +
+            "AND d.diaryAt BETWEEN :startDate AND :endDate")
+    List<Diary> findDiariesForWeek(@Param("accountId") Long accountId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT new com.likelion.mindiary.domain.weeklyEmotion.scheduler.dto.EmotionCommand(de.happiness, de.sadness, de.anger, de.surprise, de.neutral) "
+            + "FROM DailyEmotion de "
+            + "WHERE de.diary.diaryId = :diaryId")
+    EmotionCommand findEmotionByDiaryId(@Param("diaryId") Long diaryId);
+
 }
