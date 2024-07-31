@@ -55,7 +55,7 @@ public class WeeklyEmotion {
     @Column(nullable = false)
     private LocalDate weekEndDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 

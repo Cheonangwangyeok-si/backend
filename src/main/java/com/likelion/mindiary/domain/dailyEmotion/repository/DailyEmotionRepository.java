@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DailyEmotionRepository extends JpaRepository<DailyEmotion, Long> {
 
+    void deleteByDiary_DiaryId(Long diaryId);
+
 }

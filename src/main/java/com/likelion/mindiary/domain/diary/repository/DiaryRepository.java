@@ -14,7 +14,7 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
             "WHERE d.account.accountId = :accountId")
     List<Object[]> findDiaryAndShortFeedbackByAccountId(@Param("accountId") Long accountId);
 
-    @Query("SELECT d.diaryAt, d.title, d.emotionType, e.shortFeedback " +
+    @Query("SELECT d.diaryId, d.diaryAt, d.title, d.emotionType, e.shortFeedback " +
             "FROM Diary d INNER JOIN DailyEmotion e ON d.diaryId = e.diary.diaryId " +
             "WHERE d.account.accountId = :accountId " +
             "AND d.diaryAt BETWEEN :startDate AND :endDate")
