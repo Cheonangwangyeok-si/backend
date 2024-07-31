@@ -1,6 +1,7 @@
 package com.likelion.mindiary.domain.weeklyEmotion.model;
 
 import com.likelion.mindiary.domain.account.model.Account;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -54,7 +55,7 @@ public class WeeklyEmotion {
     @Column(nullable = false)
     private LocalDate weekEndDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 

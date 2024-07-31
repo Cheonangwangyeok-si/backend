@@ -1,6 +1,7 @@
 package com.likelion.mindiary.domain.diary.model;
 
 import com.likelion.mindiary.domain.account.model.Account;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -45,7 +46,7 @@ public class Diary {
     @Column(length = 20, nullable = false)
     private Emotion emotionType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "accountId")
     private Account account;
 

@@ -1,6 +1,7 @@
 package com.likelion.mindiary.domain.dailyEmotion.model;
 
 import com.likelion.mindiary.domain.diary.model.Diary;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,7 +50,7 @@ public class DailyEmotion {
     @Column(nullable = false)
     private String shortFeedback;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "diary_id", nullable = false)
     private Diary diary;
 

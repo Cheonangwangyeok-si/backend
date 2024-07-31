@@ -1,6 +1,7 @@
 package com.likelion.mindiary.domain.refreshToken.model;
 
 import com.likelion.mindiary.domain.account.model.Account;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,7 +32,7 @@ public class RefreshToken {
     @Column(nullable = false)
     private String token;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", unique = true)
     private Account account;
 
