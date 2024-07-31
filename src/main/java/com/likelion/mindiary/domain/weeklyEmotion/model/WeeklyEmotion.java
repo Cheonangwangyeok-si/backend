@@ -45,7 +45,7 @@ public class WeeklyEmotion {
     @Column(nullable = false)
     private double avgNeutral;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String weeklyDetailedFeedback;
 
     @Column(nullable = false)

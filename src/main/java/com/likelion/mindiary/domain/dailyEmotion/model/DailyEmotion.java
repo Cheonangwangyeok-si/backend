@@ -44,10 +44,10 @@ public class DailyEmotion {
     @Column(nullable = false)
     private int neutral;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String detailedFeedback;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String shortFeedback;
 
     @OneToOne
