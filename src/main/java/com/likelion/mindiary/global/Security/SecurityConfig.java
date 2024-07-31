@@ -1,11 +1,10 @@
 package com.likelion.mindiary.global.Security;
 
 import com.likelion.mindiary.domain.account.repository.AccountRepository;
-import com.likelion.mindiary.domain.account.service.CustomUserDetailsService;
 import com.likelion.mindiary.domain.refreshToken.Repository.RefreshTokenRepository;
 import com.likelion.mindiary.global.Security.JWT.JWTFilter;
 import com.likelion.mindiary.global.Security.JWT.JWTUtil;
-import jakarta.servlet.http.HttpServletResponse;
+import com.likelion.mindiary.global.Security.JWT.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +35,8 @@ public class SecurityConfig {
 
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+            throws Exception {
 
         return configuration.getAuthenticationManager();
     }
@@ -74,11 +74,13 @@ public class SecurityConfig {
 
         // 새로 만든 로그인 필터를 원래의 (UsernamePasswordAuthenticationFilter)의 자리에 넣음
         http
-                .addFilterAt(new LoginFilter(authenticationManager(configuration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(configuration), jwtUtil),
+                        UsernamePasswordAuthenticationFilter.class);
 
         // 로그인 필터 이전에 JWTFilter를 넣음
         http
-                .addFilterBefore(new JWTFilter(jwtUtil, refreshTokenRepository, memberRepository), LoginFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil, refreshTokenRepository, memberRepository),
+                        LoginFilter.class);
 
         return http.build();
     }
