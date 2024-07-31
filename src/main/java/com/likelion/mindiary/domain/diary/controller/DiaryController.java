@@ -2,6 +2,7 @@ package com.likelion.mindiary.domain.diary.controller;
 
 import com.likelion.mindiary.domain.diary.controller.dto.request.AddDiaryRequest;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetAllDiaryResponse;
+import com.likelion.mindiary.domain.diary.controller.dto.response.GetDiaryResponse;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetMonthDiaryResponse;
 import com.likelion.mindiary.domain.diary.model.Diary;
 import com.likelion.mindiary.domain.diary.service.DiaryService;
@@ -61,7 +62,7 @@ public class DiaryController {
     }
 
     @DeleteMapping("/{diaryId}")
-    public ResponseEntity<Void> deleteDiaryByDate(
+    public ResponseEntity<Void> deleteDiaryByDiaryId(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long diaryId) {
 
@@ -69,4 +70,12 @@ public class DiaryController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @GetMapping("/{diaryId}")
+    public ResponseEntity<GetDiaryResponse> getDiaryByDiaryId(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long diaryId) {
+
+        GetDiaryResponse response = diaryService.getDiaryByDiaryId(userDetails, diaryId);
+        return ResponseEntity.ok(response);
+    }
 }

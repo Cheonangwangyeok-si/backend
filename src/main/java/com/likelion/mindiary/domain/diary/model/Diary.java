@@ -46,7 +46,7 @@ public class Diary {
     @Column(length = 20, nullable = false)
     private Emotion emotionType;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "accountId")
     private Account account;
 

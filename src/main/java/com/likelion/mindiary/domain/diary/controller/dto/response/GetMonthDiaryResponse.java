@@ -4,6 +4,7 @@ import com.likelion.mindiary.domain.diary.model.Emotion;
 import java.time.LocalDate;
 
 public record GetMonthDiaryResponse(
+        Long diaryId,
         LocalDate diaryAt,
         String title,
         Emotion emotionType,

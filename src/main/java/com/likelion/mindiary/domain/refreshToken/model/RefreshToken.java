@@ -32,7 +32,7 @@ public class RefreshToken {
     @Column(nullable = false)
     private String token;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "account_id", unique = true)
     private Account account;
 

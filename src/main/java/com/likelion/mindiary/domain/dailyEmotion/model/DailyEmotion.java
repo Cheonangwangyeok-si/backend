@@ -50,7 +50,7 @@ public class DailyEmotion {
     @Column(nullable = false)
     private String shortFeedback;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "diary_id", nullable = false)
     private Diary diary;
 
