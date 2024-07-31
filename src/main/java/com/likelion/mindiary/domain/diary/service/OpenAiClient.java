@@ -45,6 +45,9 @@ public class OpenAiClient {
     @Value("${openai.prompt}")
     private String prompt;
 
+    @Value("${openai.weeklyPrompt}")
+    private String weeklyPrompt;
+
     public void analyzeEmotion(String content, Diary savedDiary) {
 
         URI uri = UriComponentsBuilder
@@ -111,4 +114,34 @@ public class OpenAiClient {
             throw new ResponseParseFailedException();
         }
     }
+
+    public String generateWeeklyFeedback(String content) {
+        URI uri = UriComponentsBuilder
+                .fromUriString(openAiUrl)
+                .build()
+                .encode()
+                .toUri();
+
+        OpenAiRequest.MessageDto messageDto = new OpenAiRequest.MessageDto("user", weeklyPrompt + content);
+        OpenAiRequest requestDto = new OpenAiRequest(model, List.of(messageDto));
+        RequestEntity<OpenAiRequest> httpEntity = new RequestEntity<>(requestDto, HttpMethod.POST, uri);
+
+        try {
+            ResponseEntity<String> exchange = restTemplate.exchange(httpEntity, String.class);
+            String responseBody = exchange.getBody();
+
+            JsonNode jsonResponse = objectMapper.readTree(responseBody);
+            return jsonResponse
+                    .get("choices")
+                    .get(0)
+                    .get("message")
+                    .get("content")
+                    .asText()
+                    .trim();
+
+        } catch (Exception e) {
+            throw new EmotionAnalysisFailedException();
+        }
+    }
+
 }
