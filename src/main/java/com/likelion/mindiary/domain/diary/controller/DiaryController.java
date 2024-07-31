@@ -9,7 +9,10 @@ import com.likelion.mindiary.domain.diary.service.DiaryService;
 import com.likelion.mindiary.global.Security.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,8 +43,13 @@ public class DiaryController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Diary saveDiary = diaryService.addDiary(userDetails, addDiaryRequest);
+        // 필요한 필드만 추출하여 Map에 담아 응답으로 반환
+        Map<String, Object> response = new HashMap<>();
+        response.put("diaryId", saveDiary.getDiaryId());
+        response.put("title", saveDiary.getTitle());
+        response.put("createdAt", saveDiary.getDiaryAt().format(DateTimeFormatter.ISO_DATE));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(saveDiary);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/all")

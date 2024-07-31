@@ -1,7 +1,6 @@
 package com.likelion.mindiary.domain.weeklyEmotion.model;
 
 import com.likelion.mindiary.domain.account.model.Account;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -46,7 +45,7 @@ public class WeeklyEmotion {
     @Column(nullable = false)
     private double avgNeutral;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String weeklyDetailedFeedback;
 
     @Column(nullable = false)

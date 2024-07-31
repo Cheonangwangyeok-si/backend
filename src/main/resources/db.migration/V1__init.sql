@@ -22,31 +22,31 @@ CREATE TABLE IF NOT EXISTS diary
 
 CREATE TABLE IF NOT EXISTS daily_emotion
 (
-    daily_emotion_id  BIGINT       NOT NULL AUTO_INCREMENT,
-    happiness         INT          NOT NULL,
-    sadness           INT          NOT NULL,
-    anger             INT          NOT NULL,
-    surprise          INT          NOT NULL,
-    neutral           INT          NOT NULL,
-    detailed_feedback TEXT         NOT NULL,
-    short_feedback    VARCHAR(255) NOT NULL,
-    diary_id          BIGINT       NOT NULL,
+    daily_emotion_id  BIGINT NOT NULL AUTO_INCREMENT,
+    happiness         INT    NOT NULL,
+    sadness           INT    NOT NULL,
+    anger             INT    NOT NULL,
+    surprise          INT    NOT NULL,
+    neutral           INT    NOT NULL,
+    detailed_feedback TEXT   NOT NULL,
+    short_feedback    TEXT   NOT NULL,
+    diary_id          BIGINT NOT NULL,
     PRIMARY KEY (daily_emotion_id),
     FOREIGN KEY (diary_id) REFERENCES diary (diary_id)
 );
 
 CREATE TABLE IF NOT EXISTS weekly_emotion
 (
-    weekly_emotion_id        BIGINT       NOT NULL AUTO_INCREMENT,
-    avg_happiness            DOUBLE       NOT NULL,
-    avg_anger                DOUBLE       NOT NULL,
-    avg_sadness              DOUBLE       NOT NULL,
-    avg_surprise             DOUBLE       NOT NULL,
-    avg_neutral              DOUBLE       NOT NULL,
-    weekly_detailed_feedback TEXT         NOT NULL,
-    week_start_date          DATE         NOT NULL,
-    week_end_date            DATE         NOT NULL,
-    account_id               BIGINT       NOT NULL,
+    weekly_emotion_id        BIGINT NOT NULL AUTO_INCREMENT,
+    avg_happiness            DOUBLE NOT NULL,
+    avg_anger                DOUBLE NOT NULL,
+    avg_sadness              DOUBLE NOT NULL,
+    avg_surprise             DOUBLE NOT NULL,
+    avg_neutral              DOUBLE NOT NULL,
+    weekly_detailed_feedback TEXT   NOT NULL,
+    week_start_date          DATE   NOT NULL,
+    week_end_date            DATE   NOT NULL,
+    account_id               BIGINT NOT NULL,
     PRIMARY KEY (weekly_emotion_id),
     FOREIGN KEY (account_id) REFERENCES account (account_id)
 );
