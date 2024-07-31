@@ -22,4 +22,13 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
             @Param("accountId") Long accountId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT d.diaryAt "
+            + "FROM Diary d "
+            + "WHERE d.account.accountId = :accountId "
+            + "AND d.diaryAt BETWEEN :startDate AND :endDate")
+    List<LocalDate> findDiaryDatesByAccountIdAndDateRange(
+            @Param("accountId") Long accountId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 }
