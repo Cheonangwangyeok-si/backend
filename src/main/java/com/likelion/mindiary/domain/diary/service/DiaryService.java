@@ -14,6 +14,7 @@ import com.likelion.mindiary.domain.diary.model.Diary;
 import com.likelion.mindiary.domain.diary.model.Emotion;
 import com.likelion.mindiary.domain.diary.repository.DiaryRepository;
 import com.likelion.mindiary.global.Security.CustomUserDetails;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -107,7 +108,6 @@ public class DiaryService {
 
     }
 
-    @Transactional
     public void deleteDiary(CustomUserDetails userDetails, Long diaryId) {
         Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
         Long accountId = account.getAccountId();
@@ -122,22 +122,14 @@ public class DiaryService {
         diaryRepository.delete(diary);
     }
 
-
-    @Transactional
     public GetDiaryResponse getDiaryByDiaryId(CustomUserDetails userDetails, Long diaryId) {
-        // 사용자 계정 조회
-        Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
-        Long accountId = account.getAccountId();
 
-        // Diary 데이터 조회
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new DiaryNotFoundException());
 
-        // DailyEmotion 데이터 조회
         DailyEmotion emotion = dailyEmotionRepository.findById(diaryId)
-                .orElseThrow(() -> new /*DailyEmotionNotFoundException*/DiaryNotFoundException());
+                .orElseThrow(() -> new DiaryNotFoundException());
 
-        // DTO 생성 및 반환
         return new GetDiaryResponse(
                 diary.getDiaryId(),
                 diary.getTitle(),
@@ -152,6 +144,37 @@ public class DiaryService {
                 emotion.getDetailedFeedback(),
                 emotion.getShortFeedback()
         );
+    }
+
+    public List<LocalDate> getMissingDiaryDays(CustomUserDetails userDetails) {
+        Long accountId = accountRepository.findByLoginId(userDetails.getProvidedId())
+                .getAccountId();
+        System.out.println("accountId = " + accountId);
+
+        LocalDate today = LocalDate.now();
+
+        // 이번 주 일요일 계산 (오늘이 일요일이면 오늘 날짜가 주 시작일)
+        LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
+
+        // startOfWeek가 오늘보다 미래라면 (이전 일요일을 사용하도록 조정)
+        if (startOfWeek.isAfter(today)) {
+            startOfWeek = startOfWeek.minusWeeks(1);
+        }
+
+        // 일요일 ~ 오늘  날짜 리스트 생성
+        List<LocalDate> weekDates = startOfWeek.datesUntil(today.plusDays(1))
+                .collect(Collectors.toList());
+
+        // 해당 날짜 범위 일기 목록 조회
+        List<LocalDate> writtenDiaryDates = diaryRepository.findDiaryDatesByAccountIdAndDateRange(
+                accountId, startOfWeek, today);
+
+        // 작성되지 않은 날짜 계산 -> 리스트화
+        List<LocalDate> missingDays = weekDates.stream()
+                .filter(date -> !writtenDiaryDates.contains(date))
+                .collect(Collectors.toList());
+
+        return missingDays;
     }
 
 }

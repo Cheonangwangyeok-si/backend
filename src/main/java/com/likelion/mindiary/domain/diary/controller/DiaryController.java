@@ -8,6 +8,7 @@ import com.likelion.mindiary.domain.diary.model.Diary;
 import com.likelion.mindiary.domain.diary.service.DiaryService;
 import com.likelion.mindiary.global.Security.CustomUserDetails;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,5 +78,12 @@ public class DiaryController {
 
         GetDiaryResponse response = diaryService.getDiaryByDiaryId(userDetails, diaryId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/missing-days")
+    public ResponseEntity<List<LocalDate>> getMissingDiaryDays(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<LocalDate> missingDays = diaryService.getMissingDiaryDays(userDetails);
+        return ResponseEntity.ok(missingDays);
     }
 }
