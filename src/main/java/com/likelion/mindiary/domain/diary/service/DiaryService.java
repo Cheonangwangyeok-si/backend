@@ -5,6 +5,8 @@ import com.likelion.mindiary.domain.account.repository.AccountRepository;
 import com.likelion.mindiary.domain.diary.controller.dto.request.AddDiaryRequest;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetAllDiaryResponse;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetMonthDiaryResponse;
+import com.likelion.mindiary.domain.diary.exception.DiaryNotFoundException;
+import com.likelion.mindiary.domain.diary.exception.NotDiaryOwnerException;
 import com.likelion.mindiary.domain.diary.model.Diary;
 import com.likelion.mindiary.domain.diary.model.Emotion;
 import com.likelion.mindiary.domain.diary.repository.DiaryRepository;
@@ -52,7 +54,7 @@ public class DiaryService {
         List<Object[]> results = diaryRepository.findDiaryAndShortFeedbackByAccountId(accountId);
 
 //        if (results.isEmpty()) {
-//            throw new NoDiaryEntriesFoundException();
+//            throw new DiaryNotFoundException();
 //        }
 
         return results.stream()
@@ -76,8 +78,8 @@ public class DiaryService {
         Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
         Long accountId = account.getAccountId();
 
-        LocalDate startDate = LocalDate.of(year, month, 1); // 해당 월의 첫날
-        LocalDate endDate = YearMonth.of(year, month).atEndOfMonth(); // 해당 월의 마지막 날
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
 
         List<Object[]> results = diaryRepository.findMonthDiaryByAccountId(accountId, startDate,
                 endDate);
@@ -98,4 +100,20 @@ public class DiaryService {
                 .collect(Collectors.toList());
 
     }
+
+    public void deleteDiary(CustomUserDetails userDetails, Long diaryId) {
+        Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
+        Long accountId = account.getAccountId();
+
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(DiaryNotFoundException::new);
+
+        if (!diary.getAccount().getAccountId().equals(accountId)) {
+            throw new NotDiaryOwnerException();
+        }
+
+        diaryRepository.delete(diary);
+    }
+
+
 }
