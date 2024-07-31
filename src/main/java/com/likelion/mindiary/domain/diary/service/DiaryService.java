@@ -13,6 +13,7 @@ import com.likelion.mindiary.domain.diary.exception.NotDiaryOwnerException;
 import com.likelion.mindiary.domain.diary.model.Diary;
 import com.likelion.mindiary.domain.diary.model.Emotion;
 import com.likelion.mindiary.domain.diary.repository.DiaryRepository;
+import com.likelion.mindiary.domain.weeklyEmotion.scheduler.WeeklyEmotionScheduler;
 import com.likelion.mindiary.global.Security.CustomUserDetails;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -32,6 +33,7 @@ public class DiaryService {
     private final DailyEmotionRepository dailyEmotionRepository;
     private final AccountRepository accountRepository;
     private final OpenAiClient openAiClient;
+    private final WeeklyEmotionScheduler weeklyEmotionScheduler;
 
     public Diary addDiary(CustomUserDetails userDetails, AddDiaryRequest addDiaryRequest) {
         Account account = accountRepository.findByLoginId(userDetails.getProvidedId());
@@ -49,6 +51,10 @@ public class DiaryService {
 
         openAiClient.analyzeEmotion(addDiaryRequest.content(), savedDiary);
 
+        // 주간 감정 조회 테스트 -> if문 주석처리
+        if (LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY) {
+            weeklyEmotionScheduler.analyzeWeeklyEmotionForUser(savedDiary.getAccount().getAccountId());
+        }
         return savedDiary;
     }
 
