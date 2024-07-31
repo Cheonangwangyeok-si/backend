@@ -1,6 +1,7 @@
 package com.likelion.mindiary.domain.diary.model;
 
 import com.likelion.mindiary.domain.account.model.Account;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,7 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,13 +40,13 @@ public class Diary {
     private String content;
 
     @Column(nullable = false)
-    private Date diaryAt;
+    private LocalDate diaryAt;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20, nullable = false)
     private Emotion emotionType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "accountId")
     private Account account;
 

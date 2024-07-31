@@ -1,6 +1,7 @@
 package com.likelion.mindiary.domain.weeklyEmotion.model;
 
 import com.likelion.mindiary.domain.account.model.Account;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,12 +50,12 @@ public class WeeklyEmotion {
     private String weeklyDetailedFeedback;
 
     @Column(nullable = false)
-    private Date weekStartDate;
+    private LocalDate weekStartDate;
 
     @Column(nullable = false)
-    private Date weekEndDate;
+    private LocalDate weekEndDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 

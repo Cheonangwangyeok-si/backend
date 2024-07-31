@@ -1,12 +1,11 @@
 package com.likelion.mindiary.domain.account.service;
 
-import com.likelion.mindiary.domain.account.controller.dto.response.LoginDTO;
+import com.likelion.mindiary.domain.account.controller.dto.request.LoginRequest;
 import com.likelion.mindiary.domain.account.model.Account;
 import com.likelion.mindiary.domain.account.model.AccountRole;
 import com.likelion.mindiary.domain.account.repository.AccountRepository;
 import com.likelion.mindiary.domain.refreshToken.Repository.RefreshTokenRepository;
 import com.likelion.mindiary.domain.refreshToken.model.RefreshToken;
-import com.likelion.mindiary.global.Security.CustomUserDetails;
 import com.likelion.mindiary.global.Security.JWT.JWTUtil;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
@@ -26,7 +25,7 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public ResponseEntity<String> login(LoginDTO loginDTO){
+    public ResponseEntity<String> login(LoginRequest loginDTO){
 
         Account findAccount = accountRepository.findByLoginId(loginDTO.getLoginId());
         Account account;

@@ -1,10 +1,10 @@
 package com.likelion.mindiary.domain.diary.controller.dto.response;
 
 import com.likelion.mindiary.domain.diary.model.Emotion;
-import java.util.Date;
+import java.time.LocalDate;
 
 public record GetMonthDiaryResponse(
-         Date diaryAt,
+        LocalDate diaryAt,
         String title,
         Emotion emotionType,
         String shortFeedback
