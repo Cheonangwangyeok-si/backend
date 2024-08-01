@@ -12,7 +12,7 @@ public class DatabaseInitializer {
 
     @PostConstruct
     public void initialize() {
-        String sql = "ALTER TABLE `account` CHANGE `name` `name` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+        String sql = "ALTER DATABASE likelion CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;";
         jdbcTemplate.execute(sql);
     }
 }
