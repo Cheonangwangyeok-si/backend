@@ -5,6 +5,7 @@ import com.likelion.mindiary.domain.account.repository.AccountRepository;
 import com.likelion.mindiary.domain.dailyEmotion.model.DailyEmotion;
 import com.likelion.mindiary.domain.dailyEmotion.repository.DailyEmotionRepository;
 import com.likelion.mindiary.domain.diary.controller.dto.request.AddDiaryRequest;
+import com.likelion.mindiary.domain.diary.controller.dto.request.DeleteDiaryRequest;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetAllDiaryResponse;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetDiaryResponse;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetMonthDiaryResponse;
@@ -18,15 +19,18 @@ import com.likelion.mindiary.global.Security.CustomUserDetails;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class DiaryService {
 
     private final DiaryRepository diaryRepository;
@@ -183,4 +187,26 @@ public class DiaryService {
         return missingDays;
     }
 
+    public ResponseEntity<String> deleteSelectedDiarys(CustomUserDetails userDetails, List<DeleteDiaryRequest> deleteDiaryRequests) {
+
+        Long accountId = accountRepository.findByLoginId(userDetails.getProvidedId())
+                .getAccountId();
+        List<Diary> diaries = new ArrayList<>();
+        List<DailyEmotion> dailyEmotions = new ArrayList<>();
+
+
+        deleteDiaryRequests.forEach(deleteDiaryRequest -> {
+            diaries.add(diaryRepository.findDiaryByDiaryIdAndAccount_AccountId(deleteDiaryRequest.getDiaryId(), accountId));
+            dailyEmotions.add(dailyEmotionRepository.findDailyEmotionByDiary_DiaryIdAndDiary_Account_AccountId(deleteDiaryRequest.getDiaryId(), accountId));
+            });
+
+
+        dailyEmotionRepository.deleteAll(dailyEmotions);
+        diaryRepository.flush();
+
+        diaryRepository.deleteAll(diaries);
+        diaryRepository.flush();
+
+        return ResponseEntity.ok().body("삭제 성공");
+    }
 }

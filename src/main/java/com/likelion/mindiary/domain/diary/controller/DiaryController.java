@@ -1,6 +1,7 @@
 package com.likelion.mindiary.domain.diary.controller;
 
 import com.likelion.mindiary.domain.diary.controller.dto.request.AddDiaryRequest;
+import com.likelion.mindiary.domain.diary.controller.dto.request.DeleteDiaryRequest;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetAllDiaryResponse;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetDiaryResponse;
 import com.likelion.mindiary.domain.diary.controller.dto.response.GetMonthDiaryResponse;
@@ -32,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/diary")
-@CrossOrigin(origins = "http://localhost:3000")
 public class DiaryController {
 
     private final DiaryService diaryService;
@@ -93,5 +93,13 @@ public class DiaryController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         List<LocalDate> missingDays = diaryService.getMissingDiaryDays(userDetails);
         return ResponseEntity.ok(missingDays);
+    }
+
+    @PostMapping("/deleteSelectedDiarys")
+    public ResponseEntity<String> deleteSelectedDiarys(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody List<DeleteDiaryRequest> deleteDiaryRequests){
+
+        return diaryService.deleteSelectedDiarys(customUserDetails,deleteDiaryRequests);
     }
 }
