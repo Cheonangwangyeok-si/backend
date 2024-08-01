@@ -77,7 +77,7 @@ public class DiaryService {
                             diary.getTitle(),
                             diary.getContent(),
                             diary.getDiaryAt(),
-                            diary.getEmotionType().getDescription(),
+                            diary.getEmotionType().name(),
                             shortFeedback
                     );
                 })
@@ -133,8 +133,8 @@ public class DiaryService {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new DiaryNotFoundException());
 
-        DailyEmotion emotion = dailyEmotionRepository.findById(diaryId)
-                .orElseThrow(() -> new DiaryNotFoundException());
+        DailyEmotion emotion = dailyEmotionRepository.findByDiary_DiaryId(diaryId).orElse(null);
+
 
         return new GetDiaryResponse(
                 diary.getDiaryId(),
