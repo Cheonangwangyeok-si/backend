@@ -46,4 +46,5 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
             + "WHERE de.diary.diaryId = :diaryId")
     EmotionCommand findEmotionByDiaryId(@Param("diaryId") Long diaryId);
 
+    Diary findDiaryByDiaryIdAndAccount_AccountId(Long diaryId, Long accountId);
 }

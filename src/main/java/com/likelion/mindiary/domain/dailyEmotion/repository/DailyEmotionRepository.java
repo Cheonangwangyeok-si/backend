@@ -10,4 +10,6 @@ public interface DailyEmotionRepository extends JpaRepository<DailyEmotion, Long
     void deleteByDiary_DiaryId(Long diaryId);
 
     Optional<DailyEmotion> findByDiary_DiaryId(Long diaryId);
+
+    DailyEmotion findDailyEmotionByDiary_DiaryIdAndDiary_Account_AccountId(Long diaryId, Long accountId);
 }
